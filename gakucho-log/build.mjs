@@ -349,14 +349,9 @@ function renderPage(logs) {
 		backdrop-filter: blur(8px);
 		border-bottom: 1px solid var(--line);
 	}
-	.search-row {
-		display: flex;
-		gap: 0.5rem;
-		align-items: center;
-	}
 	input[type='search'] {
-		flex: 1;
-		min-width: 0;
+		display: block;
+		width: 100%;
 		padding: 0.7rem 0.9rem;
 		border: 1px solid var(--line);
 		border-radius: 10px;
@@ -370,17 +365,6 @@ function renderPage(logs) {
 	button:focus-visible {
 		outline: 2px solid var(--accent);
 		outline-offset: 2px;
-	}
-	.ghost {
-		padding: 0.6rem 0.8rem;
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		background: var(--surface);
-		color: var(--ink-soft);
-		font-family: var(--body);
-		font-size: 0.8rem;
-		white-space: nowrap;
-		cursor: pointer;
 	}
 	.chips {
 		display: flex;
@@ -402,6 +386,33 @@ function renderPage(logs) {
 		background: var(--accent);
 		border-color: var(--accent);
 		color: var(--surface);
+	}
+	.chip.action {
+		color: var(--ink);
+		font-weight: 500;
+		white-space: nowrap;
+	}
+	.chip-sep {
+		width: 1px;
+		margin: 0.15rem 0.2rem;
+		background: var(--line);
+	}
+	.blur-hint {
+		margin: 0.5rem 0 0;
+		font-size: 0.72rem;
+		color: var(--ink-soft);
+	}
+	/* スクショをそのまま人に見せるためのモード。読める文面だけを隠す。 */
+	body.blurred .bubble,
+	body.blurred .log-preview,
+	body.blurred .log-note {
+		filter: blur(6px);
+	}
+	body.blurred .bubble {
+		cursor: pointer;
+	}
+	body.blurred .bubble.revealed {
+		filter: none;
 	}
 
 	main {
@@ -610,12 +621,14 @@ function renderPage(logs) {
 	</header>
 
 	<div class="controls">
-		<div class="search-row">
-			<label class="sr-only" for="q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">キーワード検索</label>
-			<input id="q" type="search" placeholder="キーワードで探す（回答の中まで検索）" autocomplete="off" />
-			<button class="ghost" id="toggle-all" type="button">全部ひらく</button>
+		<label for="q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);">キーワード検索</label>
+		<input id="q" type="search" placeholder="キーワードで探す（回答の中まで検索）" autocomplete="off" />
+		<div class="chips">
+			<button class="chip action" id="toggle-all" type="button">全部ひらく</button>
+			<button class="chip action" id="blur-toggle" type="button" aria-pressed="false">文面をぼかす</button>
+			${tags.length ? `<span class="chip-sep" aria-hidden="true"></span>${tagButtons}` : ''}
 		</div>
-		${tags.length ? `<div class="chips">${tagButtons}</div>` : ''}
+		<p class="blur-hint" id="blur-hint" hidden>ぼかし中。吹き出しをタップすると、そこだけ表示できます。</p>
 	</div>
 
 	<main id="list">${body}</main>
@@ -628,9 +641,11 @@ function renderPage(logs) {
 	(() => {
 		const input = document.querySelector('#q');
 		const toggleAll = document.querySelector('#toggle-all');
+		const blurToggle = document.querySelector('#blur-toggle');
+		const blurHint = document.querySelector('#blur-hint');
 		const noResult = document.querySelector('#no-result');
 		const logs = [...document.querySelectorAll('.log')];
-		const chips = [...document.querySelectorAll('.chip')];
+		const chips = [...document.querySelectorAll('.chip[data-tag]')];
 		const activeTags = new Set();
 
 		// 検索ハイライト用に、生成直後の吹き出しHTMLを控えておく。
@@ -742,6 +757,24 @@ function renderPage(logs) {
 			for (const log of logs) if (!log.hidden) setOpen(log, open);
 			syncToggleLabel();
 		});
+
+		blurToggle.addEventListener('click', () => {
+			const on = document.body.classList.toggle('blurred');
+			blurToggle.setAttribute('aria-pressed', String(on));
+			blurToggle.textContent = on ? 'ぼかしを解除' : '文面をぼかす';
+			blurHint.hidden = !on;
+			if (!on) {
+				for (const bubble of document.querySelectorAll('.bubble.revealed')) {
+					bubble.classList.remove('revealed');
+				}
+			}
+		});
+
+		for (const bubble of document.querySelectorAll('.bubble')) {
+			bubble.addEventListener('click', () => {
+				if (document.body.classList.contains('blurred')) bubble.classList.toggle('revealed');
+			});
+		}
 
 		input.addEventListener('input', apply);
 		syncToggleLabel();
