@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="color-scheme" content="light dark" />
+		<title>ログのこし</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap"
+		/>
+		<style>
+			:root {
+				--paper: #f2f5f2;
+				--surface: #ffffff;
+				--surface-sunk: #eaefeb;
+				--ink: #17232a;
+				--ink-soft: #5d6f73;
+				--line: #dae3dd;
+				--accent: #1e6e5a;
+				--accent-soft: #e2efe9;
+				--me: #3c5b89;
+				--me-soft: #e8edf6;
+				--mark: #f7d67c;
+				--mark-ink: #3a2c05;
+				--danger: #b4453a;
+				--shadow: 0 1px 2px rgba(23, 35, 42, 0.06), 0 8px 20px rgba(23, 35, 42, 0.05);
+				--display: 'Zen Old Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+				--body: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+				--mono: 'IBM Plex Mono', ui-monospace, monospace;
+			}
+			@media (prefers-color-scheme: dark) {
+				:root {
+					--paper: #101619;
+					--surface: #182126;
+					--surface-sunk: #131c20;
+					--ink: #e6eeea;
+					--ink-soft: #93a5a2;
+					--line: #26343a;
+					--accent: #4ec2a1;
+					--accent-soft: #17322b;
+					--me: #93b4e0;
+					--me-soft: #1b2634;
+					--mark: #6c5514;
+					--mark-ink: #ffeab6;
+					--danger: #e58b7f;
+					--shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.28);
+				}
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				padding: 0 0 6rem;
+				background: var(--paper);
+				color: var(--ink);
+				font-family: var(--body);
+				font-size: 16px;
+				line-height: 1.85;
+				-webkit-text-size-adjust: 100%;
+			}
+			.wrap {
+				width: min(100% - 1.6rem, 44rem);
+				margin-inline: auto;
+			}
+			h1,
+			h2,
+			h3 {
+				text-wrap: balance;
+			}
+
+			header {
+				padding: 2rem 0 1rem;
+			}
+			.eyebrow {
+				margin: 0 0 0.3rem;
+				font-family: var(--mono);
+				font-size: 0.7rem;
+				letter-spacing: 0.16em;
+				text-transform: uppercase;
+				color: var(--accent);
+			}
+			h1 {
+				margin: 0 0 0.5rem;
+				font-family: var(--display);
+				font-weight: 700;
+				font-size: clamp(1.8rem, 7vw, 2.4rem);
+				line-height: 1.25;
+			}
+			.lede {
+				margin: 0;
+				color: var(--ink-soft);
+				font-size: 0.88rem;
+			}
+			.counts {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.3rem 1.1rem;
+				margin: 0.8rem 0 0;
+				padding: 0;
+				list-style: none;
+				font-family: var(--mono);
+				font-size: 0.75rem;
+				color: var(--ink-soft);
+				font-variant-numeric: tabular-nums;
+			}
+			.counts b {
+				color: var(--ink);
+				font-weight: 500;
+			}
+
+			.controls {
+				position: sticky;
+				top: 0;
+				z-index: 5;
+				padding: 0.7rem 0;
+				background: color-mix(in srgb, var(--paper) 88%, transparent);
+				backdrop-filter: blur(8px);
+				border-bottom: 1px solid var(--line);
+			}
+			input[type='search'],
+			input[type='text'],
+			input[type='date'],
+			textarea {
+				display: block;
+				width: 100%;
+				padding: 0.65rem 0.85rem;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: var(--surface);
+				color: var(--ink);
+				font-family: var(--body);
+				font-size: 16px;
+				line-height: 1.7;
+				-webkit-appearance: none;
+			}
+			textarea {
+				resize: vertical;
+			}
+			:focus-visible {
+				outline: 2px solid var(--accent);
+				outline-offset: 2px;
+			}
+			.chips {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4rem;
+				margin-top: 0.6rem;
+			}
+			.chip {
+				padding: 0.2rem 0.75rem;
+				border: 1px solid var(--line);
+				border-radius: 999px;
+				background: var(--surface);
+				color: var(--ink-soft);
+				font-family: var(--body);
+				font-size: 0.75rem;
+				cursor: pointer;
+			}
+			.chip[aria-pressed='true'] {
+				background: var(--accent);
+				border-color: var(--accent);
+				color: var(--surface);
+			}
+			.chip.action {
+				color: var(--ink);
+				font-weight: 500;
+				white-space: nowrap;
+			}
+			.chip-sep {
+				width: 1px;
+				margin: 0.15rem 0.2rem;
+				background: var(--line);
+			}
+			.blur-hint {
+				margin: 0.5rem 0 0;
+				font-size: 0.72rem;
+				color: var(--ink-soft);
+			}
+
+			main {
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
+				padding-top: 1.2rem;
+			}
+			.log {
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				background: var(--surface);
+				box-shadow: var(--shadow);
+				overflow: hidden;
+			}
+			.log-head {
+				display: grid;
+				grid-template-columns: 1fr auto;
+				gap: 0.15rem 0.8rem;
+				width: 100%;
+				padding: 1rem 1.1rem;
+				border: 0;
+				background: none;
+				color: inherit;
+				font-family: inherit;
+				text-align: left;
+				cursor: pointer;
+			}
+			.log-date {
+				grid-column: 1;
+				font-family: var(--mono);
+				font-size: 0.72rem;
+				letter-spacing: 0.04em;
+				color: var(--accent);
+				font-variant-numeric: tabular-nums;
+			}
+			.log-title {
+				grid-column: 1;
+				font-weight: 700;
+				font-size: 1.02rem;
+				line-height: 1.5;
+			}
+			.log-preview,
+			.log-meta {
+				grid-column: 1 / -1;
+			}
+			.log-preview {
+				margin-top: 0.2rem;
+				color: var(--ink-soft);
+				font-size: 0.82rem;
+				line-height: 1.7;
+			}
+			.log-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4rem;
+				margin-top: 0.55rem;
+				font-size: 0.7rem;
+				color: var(--ink-soft);
+			}
+			.turns,
+			.tag,
+			.hits {
+				padding: 0.05rem 0.55rem;
+				border-radius: 999px;
+				background: var(--surface-sunk);
+			}
+			.turns {
+				font-family: var(--mono);
+				font-variant-numeric: tabular-nums;
+			}
+			.tag {
+				color: var(--accent);
+				background: var(--accent-soft);
+			}
+			.hits {
+				background: var(--mark);
+				color: var(--mark-ink);
+			}
+			.chevron {
+				grid-column: 2;
+				grid-row: 1 / span 2;
+				align-self: center;
+				width: 0.6rem;
+				height: 0.6rem;
+				border-right: 2px solid var(--ink-soft);
+				border-bottom: 2px solid var(--ink-soft);
+				transform: rotate(45deg);
+				transition: transform 0.2s ease;
+			}
+			.log-head[aria-expanded='true'] .chevron {
+				transform: rotate(-135deg);
+			}
+			.log-body {
+				display: flex;
+				flex-direction: column;
+				gap: 1.1rem;
+				padding: 0.6rem 1.1rem 1.2rem;
+				border-top: 1px solid var(--line);
+			}
+			.msg {
+				display: flex;
+				flex-direction: column;
+				max-width: 92%;
+			}
+			.msg.me {
+				align-self: flex-end;
+				align-items: flex-end;
+			}
+			.msg.ai {
+				align-self: flex-start;
+			}
+			.who {
+				margin: 0 0.5rem 0.25rem;
+				font-size: 0.68rem;
+				letter-spacing: 0.06em;
+				color: var(--ink-soft);
+			}
+			.bubble {
+				padding: 0.75rem 1rem;
+				border-radius: 14px;
+				font-size: 0.92rem;
+				line-height: 1.85;
+			}
+			.me .bubble {
+				background: var(--me-soft);
+				border: 1px solid color-mix(in srgb, var(--me) 28%, transparent);
+				border-bottom-right-radius: 4px;
+			}
+			.ai .bubble {
+				background: var(--accent-soft);
+				border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+				border-bottom-left-radius: 4px;
+			}
+			.bubble p {
+				margin: 0 0 0.8em;
+			}
+			.bubble p:last-child {
+				margin-bottom: 0;
+			}
+			.log-actions {
+				display: flex;
+				gap: 0.5rem;
+				padding-top: 0.4rem;
+				border-top: 1px dashed var(--line);
+			}
+			mark {
+				padding: 0 0.15em;
+				border-radius: 3px;
+				background: var(--mark);
+				color: var(--mark-ink);
+			}
+
+			/* 人に見せるスクショ用。読める文面だけ隠す。 */
+			body.blurred .bubble,
+			body.blurred .log-preview {
+				filter: blur(6px);
+			}
+			body.blurred .bubble {
+				cursor: pointer;
+			}
+			body.blurred .bubble.revealed {
+				filter: none;
+			}
+
+			.empty {
+				margin: 0;
+				padding: 2.6rem 1.4rem;
+				border: 1px dashed var(--line);
+				border-radius: 14px;
+				text-align: center;
+				color: var(--ink-soft);
+				font-size: 0.85rem;
+			}
+			.empty b {
+				display: block;
+				margin-bottom: 0.4rem;
+				color: var(--ink);
+				font-size: 1rem;
+			}
+
+			.btn {
+				padding: 0.6rem 1.1rem;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				background: var(--surface);
+				color: var(--ink);
+				font-family: var(--body);
+				font-size: 0.85rem;
+				font-weight: 500;
+				cursor: pointer;
+			}
+			.btn.primary {
+				background: var(--accent);
+				border-color: var(--accent);
+				color: #fff;
+			}
+			.btn.danger {
+				color: var(--danger);
+				border-color: color-mix(in srgb, var(--danger) 40%, var(--line));
+			}
+			.btn.small {
+				padding: 0.3rem 0.7rem;
+				font-size: 0.75rem;
+			}
+
+			.bar {
+				position: fixed;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				z-index: 10;
+				display: flex;
+				justify-content: center;
+				gap: 0.6rem;
+				padding: 0.7rem 0.8rem calc(0.7rem + env(safe-area-inset-bottom));
+				background: color-mix(in srgb, var(--paper) 92%, transparent);
+				backdrop-filter: blur(8px);
+				border-top: 1px solid var(--line);
+			}
+
+			.field {
+				display: flex;
+				flex-direction: column;
+				gap: 0.3rem;
+				margin-bottom: 1rem;
+			}
+			.field > label {
+				font-size: 0.8rem;
+				font-weight: 500;
+			}
+			.field .help {
+				font-size: 0.72rem;
+				color: var(--ink-soft);
+				line-height: 1.6;
+			}
+			.row {
+				display: flex;
+				gap: 0.6rem;
+				flex-wrap: wrap;
+			}
+			.row > * {
+				flex: 1;
+				min-width: 9rem;
+			}
+			.block {
+				margin-bottom: 0.6rem;
+				padding: 0.7rem 0.8rem;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				background: var(--surface);
+			}
+			.block-head {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				margin-bottom: 0.4rem;
+			}
+			.block-head .spacer {
+				flex: 1;
+			}
+			.speaker-toggle {
+				padding: 0.2rem 0.8rem;
+				border-radius: 999px;
+				border: 1px solid var(--line);
+				font-family: var(--body);
+				font-size: 0.75rem;
+				font-weight: 500;
+				cursor: pointer;
+			}
+			.speaker-toggle[data-role='me'] {
+				background: var(--me-soft);
+				border-color: color-mix(in srgb, var(--me) 35%, transparent);
+				color: var(--me);
+			}
+			.speaker-toggle[data-role='ai'] {
+				background: var(--accent-soft);
+				border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+				color: var(--accent);
+			}
+			.icon-btn {
+				padding: 0.15rem 0.5rem;
+				border: 0;
+				border-radius: 8px;
+				background: none;
+				color: var(--ink-soft);
+				font-family: var(--body);
+				font-size: 0.75rem;
+				cursor: pointer;
+			}
+			.icon-btn:hover {
+				color: var(--danger);
+			}
+			section.panel {
+				margin-bottom: 1.6rem;
+				padding: 1.1rem 1.2rem;
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				background: var(--surface);
+			}
+			section.panel h3 {
+				margin: 0 0 0.4rem;
+				font-size: 1rem;
+			}
+			section.panel p {
+				margin: 0 0 0.8rem;
+				color: var(--ink-soft);
+				font-size: 0.8rem;
+			}
+			.note-box {
+				padding: 0.9rem 1.1rem;
+				border-left: 3px solid var(--accent);
+				border-radius: 0 10px 10px 0;
+				background: var(--accent-soft);
+				color: var(--ink);
+				font-size: 0.8rem;
+				line-height: 1.75;
+			}
+			footer {
+				padding-top: 2rem;
+				color: var(--ink-soft);
+				font-size: 0.72rem;
+				text-align: center;
+			}
+			[hidden] {
+				display: none !important;
+			}
+			@media (prefers-reduced-motion: reduce) {
+				* {
+					transition: none !important;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrap">
+			<header>
+				<p class="eyebrow">Log Nokoshi</p>
+				<h1 id="app-title">ログのこし</h1>
+				<p class="lede">消えてしまうAIチャットを、貼り付けて手元に残しておくメモ帳です。</p>
+				<ul class="counts">
+					<li><b id="count-logs">0</b> 会話</li>
+					<li><b id="count-messages">0</b> 発言</li>
+					<li>保存先 <b>この端末のブラウザ</b></li>
+				</ul>
+			</header>
+
+			<!-- 一覧 -->
+			<div id="view-list">
+				<div class="controls">
+					<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%)">キーワード検索</label>
+					<input id="q" type="search" placeholder="キーワードで探す（本文の中まで検索）" autocomplete="off" />
+					<div class="chips">
+						<button class="chip action" id="toggle-all" type="button">全部ひらく</button>
+						<button class="chip action" id="blur-toggle" type="button" aria-pressed="false">文面をぼかす</button>
+						<span class="chip-sep" aria-hidden="true" id="chip-sep" hidden></span>
+						<span id="tag-chips" style="display: contents"></span>
+					</div>
+					<p class="blur-hint" id="blur-hint" hidden>ぼかし中。吹き出しをタップすると、そこだけ表示できます。</p>
+				</div>
+				<main id="list"></main>
+			</div>
+
+			<!-- 追加・編集 -->
+			<div id="view-edit" hidden>
+				<h2 id="edit-heading">会話を追加</h2>
+				<div class="field">
+					<label for="f-title">タイトル</label>
+					<input id="f-title" type="text" placeholder="例：有料記事は何を有料化する？" />
+				</div>
+				<div class="row">
+					<div class="field">
+						<label for="f-date">日付</label>
+						<input id="f-date" type="date" />
+					</div>
+					<div class="field">
+						<label for="f-tags">タグ（カンマ区切り・任意）</label>
+						<input id="f-tags" type="text" placeholder="例：note, 有料記事" />
+					</div>
+				</div>
+
+				<div class="field">
+					<label for="f-paste">会話を貼り付け</label>
+					<p class="help">
+						チャット画面からコピーした文章を貼って「発言に分ける」を押すと、<b>空行のかたまりごと</b>に区切って、自分／相手を交互に割り当てます。順番が違うところは、あとから話者のボタンを押して入れ替えられます。
+					</p>
+					<textarea id="f-paste" rows="6" placeholder="ここに貼り付け"></textarea>
+				</div>
+				<div class="row" style="margin-bottom: 1.4rem">
+					<button class="btn" id="split-btn" type="button">発言に分ける</button>
+					<button class="btn" id="add-block-btn" type="button">空の発言を足す</button>
+				</div>
+
+				<div id="blocks"></div>
+
+				<div class="row" style="margin: 1.4rem 0 2rem">
+					<button class="btn primary" id="save-btn" type="button">保存する</button>
+					<button class="btn" id="cancel-btn" type="button">やめる</button>
+				</div>
+			</div>
+
+			<!-- 設定 -->
+			<div id="view-settings" hidden>
+				<h2>設定とバックアップ</h2>
+
+				<section class="panel">
+					<h3>相手の名前</h3>
+					<p>吹き出しに出る相手側の名前です。「AI」「学長AI」など、使いやすい呼び方にしてください。</p>
+					<div class="row">
+						<input id="f-partner" type="text" maxlength="12" />
+						<button class="btn" id="partner-save" type="button">変更する</button>
+					</div>
+				</section>
+
+				<section class="panel">
+					<h3>バックアップ（書き出し）</h3>
+					<p>
+						記録はこの端末のブラウザの中だけに保存されています。<b>機種変更やブラウザのデータ削除で消えます。</b>
+						ときどき書き出して、クラウドやメールに置いておくと安心です。
+					</p>
+					<div class="row">
+						<button class="btn" id="export-btn" type="button">ファイルに書き出す</button>
+						<button class="btn" id="copy-btn" type="button">文字としてコピー</button>
+					</div>
+				</section>
+
+				<section class="panel">
+					<h3>読み込み</h3>
+					<p>書き出したファイルを読み込みます。いまある記録に<b>追加</b>されます（同じ記録は重複しません）。</p>
+					<input id="import-file" type="file" accept="application/json,.json" />
+				</section>
+
+				<section class="panel">
+					<h3>全部消す</h3>
+					<p>この端末に保存された記録をすべて削除します。取り消せません。</p>
+					<button class="btn danger" id="reset-btn" type="button">全部消す</button>
+				</section>
+
+				<p class="note-box">
+					入力した内容はどこにも送信されません。通信するのは文字の見た目（フォント）を読み込むときだけで、
+					会話の中身はこの端末から出ません。
+				</p>
+			</div>
+
+			<footer>
+				<p id="foot-note">ログのこし — 記録はこの端末のブラウザに保存されます。定期的な書き出しをおすすめします。</p>
+			</footer>
+		</div>
+
+		<nav class="bar">
+			<button class="btn primary" id="nav-new" type="button">＋ 会話を追加</button>
+			<button class="btn" id="nav-settings" type="button">設定</button>
+			<button class="btn" id="nav-back" type="button" hidden>一覧にもどる</button>
+		</nav>
+
+		<script>
+			(() => {
+				'use strict';
+
+				const STORE_KEY = 'lognokoshi.v1';
+				const defaultState = { version: 1, partnerName: 'AI', logs: [] };
+
+				const $ = (id) => document.getElementById(id);
+				const state = load();
+				const openIds = new Set();
+				const activeTags = new Set();
+				let editing = null; // { id: string|null, blocks: [{role, text}] }
+
+				function load() {
+					try {
+						const raw = localStorage.getItem(STORE_KEY);
+						if (!raw) return structuredClone(defaultState);
+						const parsed = JSON.parse(raw);
+						return {
+							version: 1,
+							partnerName: typeof parsed.partnerName === 'string' && parsed.partnerName ? parsed.partnerName : 'AI',
+							logs: Array.isArray(parsed.logs) ? parsed.logs : [],
+						};
+					} catch (error) {
+						console.error(error);
+						return structuredClone(defaultState);
+					}
+				}
+
+				function save() {
+					try {
+						localStorage.setItem(STORE_KEY, JSON.stringify(state));
+						return true;
+					} catch (error) {
+						console.error(error);
+						alert('保存できませんでした。ブラウザの空き容量が足りないか、プライベートモードで開いている可能性があります。');
+						return false;
+					}
+				}
+
+				const todayISO = () => {
+					const now = new Date();
+					const pad = (value) => String(value).padStart(2, '0');
+					return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+				};
+
+				const newId = () =>
+					`${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
+				const flatten = (text) => text.replace(/\s+/g, ' ').trim();
+
+				const summarize = (text, length = 62) => {
+					const flat = flatten(text);
+					return flat.length > length ? `${flat.slice(0, length)}…` : flat;
+				};
+
+				const searchTextOf = (log) =>
+					[log.title, (log.tags || []).join(' '), ...log.messages.map((m) => m.text)]
+						.join(' ')
+						.toLowerCase();
+
+				function sortLogs() {
+					state.logs.sort((a, b) => (a.date === b.date ? b.createdAt - a.createdAt : b.date < a.date ? -1 : 1));
+				}
+
+				/** テキストを段落に分け、キーワードがあれば <mark> を付けて描画する。 */
+				function paintText(container, text, keyword) {
+					container.textContent = '';
+					for (const block of text.split(/\n{2,}/)) {
+						const trimmed = block.trim();
+						if (!trimmed) continue;
+						const p = document.createElement('p');
+						trimmed.split('\n').forEach((line, index) => {
+							if (index > 0) p.append(document.createElement('br'));
+							if (!keyword) {
+								p.append(document.createTextNode(line));
+								return;
+							}
+							let rest = line;
+							let at = rest.toLowerCase().indexOf(keyword);
+							while (at !== -1) {
+								p.append(document.createTextNode(rest.slice(0, at)));
+								const hit = document.createElement('mark');
+								hit.textContent = rest.slice(at, at + keyword.length);
+								p.append(hit);
+								rest = rest.slice(at + keyword.length);
+								at = rest.toLowerCase().indexOf(keyword);
+							}
+							p.append(document.createTextNode(rest));
+						});
+						container.append(p);
+					}
+				}
+
+				function renderCounts() {
+					$('count-logs').textContent = state.logs.length;
+					$('count-messages').textContent = state.logs.reduce((sum, log) => sum + log.messages.length, 0);
+				}
+
+				function renderTagChips() {
+					const tags = [...new Set(state.logs.flatMap((log) => log.tags || []))].sort((a, b) =>
+						a.localeCompare(b, 'ja'),
+					);
+					const host = $('tag-chips');
+					host.textContent = '';
+					$('chip-sep').hidden = tags.length === 0;
+					for (const tag of tags) {
+						const chip = document.createElement('button');
+						chip.type = 'button';
+						chip.className = 'chip';
+						chip.dataset.tag = tag;
+						chip.textContent = `#${tag}`;
+						chip.setAttribute('aria-pressed', String(activeTags.has(tag)));
+						chip.addEventListener('click', () => {
+							activeTags.has(tag) ? activeTags.delete(tag) : activeTags.add(tag);
+							renderTagChips();
+							renderList();
+						});
+						host.append(chip);
+					}
+				}
+
+				function renderList() {
+					const keyword = $('q').value.trim().toLowerCase();
+					const list = $('list');
+					list.textContent = '';
+
+					if (state.logs.length === 0) {
+						list.append(
+							buildEmpty(
+								'まだ記録がありません',
+								'AIとの会話をコピーして、下の「＋ 会話を追加」から貼り付けてください。',
+							),
+						);
+						renderCounts();
+						return;
+					}
+
+					const shown = state.logs.filter((log) => {
+						const tags = log.tags || [];
+						const matchesTags = [...activeTags].every((tag) => tags.includes(tag));
+						return matchesTags && (keyword === '' || searchTextOf(log).includes(keyword));
+					});
+
+					if (shown.length === 0) {
+						list.append(buildEmpty('見つかりませんでした', '別の言葉やタグで探してみてください。'));
+						renderCounts();
+						syncToggleLabel();
+						return;
+					}
+
+					for (const log of shown) list.append(buildCard(log, keyword));
+					renderCounts();
+					syncToggleLabel();
+				}
+
+				function buildEmpty(title, body) {
+					const box = document.createElement('p');
+					box.className = 'empty';
+					const strong = document.createElement('b');
+					strong.textContent = title;
+					box.append(strong, document.createTextNode(body));
+					return box;
+				}
+
+				function buildCard(log, keyword) {
+					const article = document.createElement('article');
+					article.className = 'log';
+
+					const head = document.createElement('button');
+					head.type = 'button';
+					head.className = 'log-head';
+					const isOpen = openIds.has(log.id) || (keyword !== '' && searchTextOf(log).includes(keyword));
+					head.setAttribute('aria-expanded', String(isOpen));
+
+					const date = document.createElement('span');
+					date.className = 'log-date';
+					date.textContent = (log.date || '').replaceAll('-', '.');
+
+					const title = document.createElement('span');
+					title.className = 'log-title';
+					title.textContent = log.title;
+
+					const preview = document.createElement('span');
+					preview.className = 'log-preview';
+					preview.textContent = summarize((log.messages.find((m) => m.role === 'me') || log.messages[0]).text);
+
+					const meta = document.createElement('span');
+					meta.className = 'log-meta';
+					const turns = document.createElement('span');
+					turns.className = 'turns';
+					turns.textContent = `${log.messages.filter((m) => m.role === 'me').length}往復`;
+					meta.append(turns);
+					for (const tag of log.tags || []) {
+						const chip = document.createElement('span');
+						chip.className = 'tag';
+						chip.textContent = `#${tag}`;
+						meta.append(chip);
+					}
+
+					const chevron = document.createElement('span');
+					chevron.className = 'chevron';
+					chevron.setAttribute('aria-hidden', 'true');
+
+					head.append(date, title, preview, meta, chevron);
+					head.addEventListener('click', () => {
+						openIds.has(log.id) ? openIds.delete(log.id) : openIds.add(log.id);
+						renderList();
+					});
+					article.append(head);
+
+					const body = document.createElement('div');
+					body.className = 'log-body';
+					body.hidden = !isOpen;
+
+					let hits = 0;
+					for (const message of log.messages) {
+						const row = document.createElement('div');
+						row.className = `msg ${message.role}`;
+						const who = document.createElement('p');
+						who.className = 'who';
+						who.textContent = message.role === 'me' ? '自分' : state.partnerName;
+						const bubble = document.createElement('div');
+						bubble.className = 'bubble';
+						paintText(bubble, message.text, keyword);
+						hits += bubble.querySelectorAll('mark').length;
+						bubble.addEventListener('click', () => {
+							if (document.body.classList.contains('blurred')) bubble.classList.toggle('revealed');
+						});
+						row.append(who, bubble);
+						body.append(row);
+					}
+
+					if (hits > 0) {
+						const badge = document.createElement('span');
+						badge.className = 'hits';
+						badge.textContent = `${hits}件ヒット`;
+						meta.append(badge);
+					}
+
+					const actions = document.createElement('div');
+					actions.className = 'log-actions';
+					const edit = document.createElement('button');
+					edit.type = 'button';
+					edit.className = 'btn small';
+					edit.textContent = '編集';
+					edit.addEventListener('click', () => openEditor(log.id));
+					const remove = document.createElement('button');
+					remove.type = 'button';
+					remove.className = 'btn small danger';
+					remove.textContent = '削除';
+					remove.addEventListener('click', () => {
+						if (!confirm(`「${log.title}」を削除します。よろしいですか？`)) return;
+						state.logs = state.logs.filter((item) => item.id !== log.id);
+						if (save()) {
+							renderTagChips();
+							renderList();
+						}
+					});
+					actions.append(edit, remove);
+					body.append(actions);
+
+					article.append(body);
+					return article;
+				}
+
+				function syncToggleLabel() {
+					const heads = [...document.querySelectorAll('.log-head')];
+					const allOpen = heads.length > 0 && heads.every((head) => head.getAttribute('aria-expanded') === 'true');
+					$('toggle-all').textContent = allOpen ? '全部とじる' : '全部ひらく';
+					$('toggle-all').dataset.next = allOpen ? 'close' : 'open';
+				}
+
+				// --- 画面の切り替え ---------------------------------------------------
+				function showView(name) {
+					$('view-list').hidden = name !== 'list';
+					$('view-edit').hidden = name !== 'edit';
+					$('view-settings').hidden = name !== 'settings';
+					$('nav-new').hidden = name !== 'list';
+					$('nav-settings').hidden = name !== 'list';
+					$('nav-back').hidden = name === 'list';
+					window.scrollTo({ top: 0 });
+				}
+
+				// --- 追加・編集 -------------------------------------------------------
+				function openEditor(id) {
+					const log = id ? state.logs.find((item) => item.id === id) : null;
+					editing = { id: id || null, blocks: log ? log.messages.map((m) => ({ ...m })) : [] };
+					$('edit-heading').textContent = log ? '会話を編集' : '会話を追加';
+					$('f-title').value = log ? log.title : '';
+					$('f-date').value = log ? log.date : todayISO();
+					$('f-tags').value = log ? (log.tags || []).join(', ') : '';
+					$('f-paste').value = '';
+					renderBlocks();
+					showView('edit');
+				}
+
+				function renderBlocks() {
+					const host = $('blocks');
+					host.textContent = '';
+					editing.blocks.forEach((block, index) => {
+						const card = document.createElement('div');
+						card.className = 'block';
+
+						const head = document.createElement('div');
+						head.className = 'block-head';
+
+						const speaker = document.createElement('button');
+						speaker.type = 'button';
+						speaker.className = 'speaker-toggle';
+						speaker.dataset.role = block.role;
+						speaker.textContent = block.role === 'me' ? '自分' : state.partnerName;
+						speaker.title = '押すと話者が入れ替わります';
+						speaker.addEventListener('click', () => {
+							block.role = block.role === 'me' ? 'ai' : 'me';
+							renderBlocks();
+						});
+
+						const spacer = document.createElement('span');
+						spacer.className = 'spacer';
+
+						const up = document.createElement('button');
+						up.type = 'button';
+						up.className = 'icon-btn';
+						up.textContent = '↑';
+						up.disabled = index === 0;
+						up.addEventListener('click', () => {
+							[editing.blocks[index - 1], editing.blocks[index]] = [editing.blocks[index], editing.blocks[index - 1]];
+							renderBlocks();
+						});
+
+						const down = document.createElement('button');
+						down.type = 'button';
+						down.className = 'icon-btn';
+						down.textContent = '↓';
+						down.disabled = index === editing.blocks.length - 1;
+						down.addEventListener('click', () => {
+							[editing.blocks[index + 1], editing.blocks[index]] = [editing.blocks[index], editing.blocks[index + 1]];
+							renderBlocks();
+						});
+
+						const remove = document.createElement('button');
+						remove.type = 'button';
+						remove.className = 'icon-btn';
+						remove.textContent = '削除';
+						remove.addEventListener('click', () => {
+							editing.blocks.splice(index, 1);
+							renderBlocks();
+						});
+
+						head.append(speaker, spacer, up, down, remove);
+
+						const area = document.createElement('textarea');
+						area.rows = Math.min(12, Math.max(3, block.text.split('\n').length + 1));
+						area.value = block.text;
+						area.addEventListener('input', () => {
+							block.text = area.value;
+						});
+
+						card.append(head, area);
+						host.append(card);
+					});
+				}
+
+				$('split-btn').addEventListener('click', () => {
+					const raw = $('f-paste').value;
+					const chunks = raw
+						.split(/\n{2,}/)
+						.map((chunk) => chunk.trim())
+						.filter(Boolean);
+					if (chunks.length === 0) {
+						alert('貼り付け欄が空です。会話をコピーして貼り付けてください。');
+						return;
+					}
+					let role = editing.blocks.length > 0 && editing.blocks.at(-1).role === 'me' ? 'ai' : 'me';
+					for (const chunk of chunks) {
+						editing.blocks.push({ role, text: chunk });
+						role = role === 'me' ? 'ai' : 'me';
+					}
+					$('f-paste').value = '';
+					renderBlocks();
+				});
+
+				$('add-block-btn').addEventListener('click', () => {
+					const role = editing.blocks.length > 0 && editing.blocks.at(-1).role === 'me' ? 'ai' : 'me';
+					editing.blocks.push({ role, text: '' });
+					renderBlocks();
+				});
+
+				$('save-btn').addEventListener('click', () => {
+					const blocks = editing.blocks.filter((block) => block.text.trim() !== '');
+					if (blocks.length === 0) {
+						alert('発言がありません。貼り付けて「発言に分ける」を押してください。');
+						return;
+					}
+					const title = $('f-title').value.trim() || summarize(blocks[0].text, 30);
+					const log = {
+						id: editing.id || newId(),
+						title,
+						date: $('f-date').value || todayISO(),
+						tags: $('f-tags')
+							.value.split(/[,、]/)
+							.map((tag) => tag.trim().replace(/^#/, ''))
+							.filter(Boolean),
+						messages: blocks.map((block) => ({ role: block.role, text: block.text.trim() })),
+						createdAt: editing.id
+							? state.logs.find((item) => item.id === editing.id)?.createdAt || Date.now()
+							: Date.now(),
+					};
+					state.logs = state.logs.filter((item) => item.id !== log.id);
+					state.logs.push(log);
+					sortLogs();
+					if (!save()) return;
+					openIds.add(log.id);
+					editing = null;
+					renderTagChips();
+					renderList();
+					showView('list');
+				});
+
+				$('cancel-btn').addEventListener('click', () => {
+					editing = null;
+					showView('list');
+				});
+
+				// --- 設定 -------------------------------------------------------------
+				$('partner-save').addEventListener('click', () => {
+					const name = $('f-partner').value.trim();
+					if (!name) return;
+					state.partnerName = name;
+					if (!save()) return;
+					renderList();
+					alert(`相手の名前を「${name}」にしました。`);
+				});
+
+				const exportName = () => `lognokoshi-${todayISO()}.json`;
+
+				$('export-btn').addEventListener('click', () => {
+					const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+					const url = URL.createObjectURL(blob);
+					const link = document.createElement('a');
+					link.href = url;
+					link.download = exportName();
+					document.body.append(link);
+					link.click();
+					link.remove();
+					setTimeout(() => URL.revokeObjectURL(url), 1000);
+				});
+
+				$('copy-btn').addEventListener('click', async () => {
+					const text = JSON.stringify(state, null, 2);
+					try {
+						await navigator.clipboard.writeText(text);
+						alert('コピーしました。メモアプリなどに貼り付けて保管してください。');
+					} catch {
+						window.prompt('この内容をコピーして保管してください。', text);
+					}
+				});
+
+				$('import-file').addEventListener('change', async (event) => {
+					const file = event.target.files?.[0];
+					if (!file) return;
+					try {
+						const parsed = JSON.parse(await file.text());
+						const incoming = Array.isArray(parsed.logs) ? parsed.logs : [];
+						if (incoming.length === 0) throw new Error('logs がありません');
+						const known = new Set(state.logs.map((log) => log.id));
+						let added = 0;
+						for (const log of incoming) {
+							if (!log || !Array.isArray(log.messages) || known.has(log.id)) continue;
+							state.logs.push({
+								id: log.id || newId(),
+								title: log.title || '無題',
+								date: log.date || todayISO(),
+								tags: Array.isArray(log.tags) ? log.tags : [],
+								messages: log.messages,
+								createdAt: log.createdAt || Date.now(),
+							});
+							added += 1;
+						}
+						sortLogs();
+						if (!save()) return;
+						renderTagChips();
+						renderList();
+						alert(`${added}件を読み込みました。`);
+					} catch (error) {
+						console.error(error);
+						alert('読み込めませんでした。書き出したJSONファイルを選んでください。');
+					} finally {
+						event.target.value = '';
+					}
+				});
+
+				$('reset-btn').addEventListener('click', () => {
+					if (!confirm('この端末に保存された記録をすべて消します。取り消せません。よろしいですか？')) return;
+					if (!confirm('本当に全部消しますか？ 書き出しがまだなら、先にバックアップをおすすめします。')) return;
+					state.logs = [];
+					if (!save()) return;
+					openIds.clear();
+					activeTags.clear();
+					renderTagChips();
+					renderList();
+					showView('list');
+				});
+
+				// --- 一覧の操作 -------------------------------------------------------
+				$('q').addEventListener('input', renderList);
+
+				$('toggle-all').addEventListener('click', () => {
+					const open = $('toggle-all').dataset.next !== 'close';
+					openIds.clear();
+					if (open) for (const log of state.logs) openIds.add(log.id);
+					renderList();
+				});
+
+				$('blur-toggle').addEventListener('click', () => {
+					const on = document.body.classList.toggle('blurred');
+					$('blur-toggle').setAttribute('aria-pressed', String(on));
+					$('blur-toggle').textContent = on ? 'ぼかしを解除' : '文面をぼかす';
+					$('blur-hint').hidden = !on;
+					if (!on) for (const bubble of document.querySelectorAll('.bubble.revealed')) bubble.classList.remove('revealed');
+				});
+
+				$('nav-new').addEventListener('click', () => openEditor(null));
+				$('nav-settings').addEventListener('click', () => {
+					$('f-partner').value = state.partnerName;
+					showView('settings');
+				});
+				$('nav-back').addEventListener('click', () => {
+					editing = null;
+					showView('list');
+				});
+
+				sortLogs();
+				renderTagChips();
+				renderList();
+				showView('list');
+			})();
+		</script>
+	</body>
+</html>
