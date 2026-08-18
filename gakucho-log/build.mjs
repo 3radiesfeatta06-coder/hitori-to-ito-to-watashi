@@ -695,10 +695,10 @@ function renderPage(logs) {
 					return;
 				}
 
-				const count = haystack.split(raw).length - 1;
-				hits.hidden = false;
-				hits.textContent = count + '件ヒット';
 				highlight(index, keyword);
+				const count = log.querySelectorAll('mark').length;
+				hits.hidden = count === 0;
+				hits.textContent = count + '件ヒット';
 				setOpen(log, true);
 			});
 
