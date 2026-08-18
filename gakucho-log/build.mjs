@@ -2,7 +2,7 @@
 // logs/*.md を読んで、スマホで見返せる1枚もののHTMLビューア（dist/index.html）を書き出す。
 // 依存パッケージなし。実行: node gakucho-log/build.mjs
 
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -101,9 +101,16 @@ function parseMessages(body, file) {
 	return messages;
 }
 
-function formatDate(value, file) {
+function formatDate(value, file, time) {
 	const date = new Date(`${value}T00:00:00Z`);
 	if (Number.isNaN(date.valueOf())) fail(`${file}: date は YYYY-MM-DD で書いてください（今: ${value}）。`);
+	// time: "14:30" があれば、同じ日の中の並び順に使う（表示はしない）。
+	let minutes = 0;
+	if (time) {
+		const parsed = String(time).match(/^(\d{1,2}):(\d{2})$/);
+		if (!parsed) fail(`${file}: time は 14:30 のように書いてください（今: ${time}）。`);
+		minutes = Number(parsed[1]) * 60 + Number(parsed[2]);
+	}
 	const parts = new Intl.DateTimeFormat('ja-JP', {
 		timeZone: 'UTC',
 		year: 'numeric',
@@ -117,6 +124,7 @@ function formatDate(value, file) {
 		short: value.replaceAll('-', '.'),
 		long: `${get('year')}年${get('month').replace('月', '')}月${get('day')}日（${get('weekday')}）`,
 		sortKey: date.valueOf(),
+		minutes,
 	};
 }
 
@@ -145,7 +153,9 @@ async function loadLogs() {
 
 	return files
 		.map(async (name) => {
-			const raw = await readFile(join(logsDir, name), 'utf8');
+			const path = join(logsDir, name);
+			const raw = await readFile(path, 'utf8');
+			const { mtimeMs } = await stat(path);
 			const { meta, body } = parseFrontmatter(raw, name);
 			if (!meta.title) fail(`${name}: title がありません。`);
 			if (!meta.date) fail(`${name}: date がありません。`);
@@ -156,7 +166,8 @@ async function loadLogs() {
 			return {
 				file: name,
 				title: meta.title,
-				date: formatDate(meta.date, name),
+				date: formatDate(meta.date, name, meta.time),
+				addedAt: mtimeMs,
 				tags: Array.isArray(meta.tags) ? meta.tags : [meta.tags].filter(Boolean),
 				source: meta.source ?? 'リベシティ 学長AIチャット',
 				note: meta.note ?? '',
@@ -783,7 +794,10 @@ function renderPage(logs) {
 `;
 }
 
-const logs = (await loadLogs()).sort((a, b) => b.date.sortKey - a.date.sortKey);
+const logs = (await loadLogs()).sort(
+	(a, b) =>
+		b.date.sortKey - a.date.sortKey || b.date.minutes - a.date.minutes || b.addedAt - a.addedAt,
+);
 await mkdir(outDir, { recursive: true });
 await writeFile(outFile, renderPage(logs), 'utf8');
 console.log(`書き出しました: ${outFile}（${logs.length}会話 / ${logs.reduce((sum, log) => sum + log.messages.length, 0)}発言）`);
