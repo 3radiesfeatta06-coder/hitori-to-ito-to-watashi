@@ -13,6 +13,14 @@
 		/>
 		<style>
 			:root {
+				--display: 'Zen Old Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+				--body: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+				--mono: 'IBM Plex Mono', ui-monospace, monospace;
+			}
+
+			/* 配色。html の data-palette で選び、.dark が付くと夜の色に切り替わる。 */
+			:root,
+			[data-palette='moss'] {
 				--paper: #f2f5f2;
 				--surface: #ffffff;
 				--surface-sunk: #eaefeb;
@@ -27,27 +35,122 @@
 				--mark-ink: #3a2c05;
 				--danger: #b4453a;
 				--shadow: 0 1px 2px rgba(23, 35, 42, 0.06), 0 8px 20px rgba(23, 35, 42, 0.05);
-				--display: 'Zen Old Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
-				--body: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
-				--mono: 'IBM Plex Mono', ui-monospace, monospace;
 			}
-			@media (prefers-color-scheme: dark) {
-				:root {
-					--paper: #101619;
-					--surface: #182126;
-					--surface-sunk: #131c20;
-					--ink: #e6eeea;
-					--ink-soft: #93a5a2;
-					--line: #26343a;
-					--accent: #4ec2a1;
-					--accent-soft: #17322b;
-					--me: #93b4e0;
-					--me-soft: #1b2634;
-					--mark: #6c5514;
-					--mark-ink: #ffeab6;
-					--danger: #e58b7f;
-					--shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.28);
-				}
+			.dark,
+			.dark[data-palette='moss'] {
+				--paper: #101619;
+				--surface: #182126;
+				--surface-sunk: #131c20;
+				--ink: #e6eeea;
+				--ink-soft: #93a5a2;
+				--line: #26343a;
+				--accent: #4ec2a1;
+				--accent-soft: #17322b;
+				--me: #93b4e0;
+				--me-soft: #1b2634;
+				--mark: #6c5514;
+				--mark-ink: #ffeab6;
+				--danger: #e58b7f;
+				--shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.28);
+			}
+
+			[data-palette='sumi'] {
+				--paper: #f6f5f2;
+				--surface: #ffffff;
+				--surface-sunk: #edebe6;
+				--ink: #1c1a17;
+				--ink-soft: #6b6560;
+				--line: #e0dcd4;
+				--accent: #a8392b;
+				--accent-soft: #f7e8e4;
+				--me: #47433d;
+				--me-soft: #eceae4;
+				--mark: #ecd9a0;
+				--mark-ink: #3a2f10;
+				--danger: #a8392b;
+				--shadow: 0 1px 2px rgba(28, 26, 23, 0.07), 0 8px 20px rgba(28, 26, 23, 0.06);
+			}
+			.dark[data-palette='sumi'] {
+				--paper: #14130f;
+				--surface: #1e1c18;
+				--surface-sunk: #191713;
+				--ink: #ece7de;
+				--ink-soft: #a09990;
+				--line: #322e28;
+				--accent: #e0705f;
+				--accent-soft: #33201c;
+				--me: #c9c3b8;
+				--me-soft: #26241f;
+				--mark: #6b5a2c;
+				--mark-ink: #f7ecc9;
+				--danger: #e0705f;
+				--shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.3);
+			}
+
+			[data-palette='minamo'] {
+				--paper: #eef3f7;
+				--surface: #ffffff;
+				--surface-sunk: #e3ebf1;
+				--ink: #14202b;
+				--ink-soft: #5a6b78;
+				--line: #d5e0e8;
+				--accent: #1c5d80;
+				--accent-soft: #e0eef5;
+				--me: #6f5f9e;
+				--me-soft: #ece8f6;
+				--mark: #f5d98c;
+				--mark-ink: #3a2e08;
+				--danger: #b4453a;
+				--shadow: 0 1px 2px rgba(20, 32, 43, 0.07), 0 8px 20px rgba(20, 32, 43, 0.06);
+			}
+			.dark[data-palette='minamo'] {
+				--paper: #0d151b;
+				--surface: #152029;
+				--surface-sunk: #111a21;
+				--ink: #e2ecf2;
+				--ink-soft: #8ba0af;
+				--line: #22323d;
+				--accent: #5fb2d8;
+				--accent-soft: #123040;
+				--me: #b0a3dc;
+				--me-soft: #221f33;
+				--mark: #6c5514;
+				--mark-ink: #ffeab6;
+				--danger: #e58b7f;
+				--shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.3);
+			}
+
+			[data-palette='budo'] {
+				--paper: #f6f2f5;
+				--surface: #ffffff;
+				--surface-sunk: #eee7ec;
+				--ink: #221a24;
+				--ink-soft: #6c5f70;
+				--line: #e2d8e0;
+				--accent: #6c3f7a;
+				--accent-soft: #f1e8f4;
+				--me: #8a6626;
+				--me-soft: #f5eddc;
+				--mark: #f2d488;
+				--mark-ink: #3a2c05;
+				--danger: #b4453a;
+				--shadow: 0 1px 2px rgba(34, 26, 36, 0.07), 0 8px 20px rgba(34, 26, 36, 0.06);
+			}
+			.dark[data-palette='budo'] {
+				--paper: #16111a;
+				--surface: #201927;
+				--surface-sunk: #1a1420;
+				--ink: #ece4ef;
+				--ink-soft: #a494ab;
+				--line: #322843;
+				--accent: #c194d8;
+				--accent-soft: #2a1d33;
+				--me: #d8b978;
+				--me-soft: #2b2418;
+				--mark: #6c5514;
+				--mark-ink: #ffeab6;
+				--danger: #e58b7f;
+				--shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.3);
 			}
 
 			* {
@@ -473,6 +576,44 @@
 			.icon-btn:hover {
 				color: var(--danger);
 			}
+			.swatches {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+				gap: 0.6rem;
+			}
+			.swatch {
+				display: flex;
+				flex-direction: column;
+				gap: 0.4rem;
+				padding: 0.6rem;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				background: var(--surface);
+				font-family: var(--body);
+				font-size: 0.78rem;
+				color: var(--ink-soft);
+				cursor: pointer;
+			}
+			.swatch[aria-pressed='true'] {
+				border-color: var(--accent);
+				box-shadow: inset 0 0 0 1px var(--accent);
+				color: var(--ink);
+				font-weight: 500;
+			}
+			.swatch-preview {
+				display: flex;
+				align-items: center;
+				gap: 0.3rem;
+				height: 2.2rem;
+				padding: 0 0.5rem;
+				border: 1px solid rgba(128, 128, 128, 0.25);
+				border-radius: 8px;
+			}
+			.swatch-dot {
+				width: 0.85rem;
+				height: 0.85rem;
+				border-radius: 999px;
+			}
 			section.panel {
 				margin-bottom: 1.6rem;
 				padding: 1.1rem 1.2rem;
@@ -586,6 +727,18 @@
 				<h2>設定とバックアップ</h2>
 
 				<section class="panel">
+					<h3>配色</h3>
+					<p>好きな色で使ってください。あとからいつでも変えられます。</p>
+					<div class="swatches" id="swatches"></div>
+				</section>
+
+				<section class="panel">
+					<h3>明るさ</h3>
+					<p>「端末に合わせる」にすると、スマホのダークモード設定にそのまま従います。</p>
+					<div class="chips" id="mode-chips" style="margin-top: 0"></div>
+				</section>
+
+				<section class="panel">
 					<h3>相手の名前</h3>
 					<p>吹き出しに出る相手側の名前です。「AI」「学長AI」など、使いやすい呼び方にしてください。</p>
 					<div class="row">
@@ -640,7 +793,19 @@
 				'use strict';
 
 				const STORE_KEY = 'lognokoshi.v1';
-				const defaultState = { version: 1, partnerName: 'AI', logs: [] };
+				const defaultState = { version: 1, partnerName: 'AI', palette: 'moss', mode: 'auto', logs: [] };
+
+				const PALETTES = [
+					{ id: 'moss', name: 'もり', light: ['#f2f5f2', '#1e6e5a', '#3c5b89'], dark: ['#101619', '#4ec2a1', '#93b4e0'] },
+					{ id: 'sumi', name: 'すみ', light: ['#f6f5f2', '#a8392b', '#47433d'], dark: ['#14130f', '#e0705f', '#c9c3b8'] },
+					{ id: 'minamo', name: 'みなも', light: ['#eef3f7', '#1c5d80', '#6f5f9e'], dark: ['#0d151b', '#5fb2d8', '#b0a3dc'] },
+					{ id: 'budo', name: 'ぶどう', light: ['#f6f2f5', '#6c3f7a', '#8a6626'], dark: ['#16111a', '#c194d8', '#d8b978'] },
+				];
+				const MODES = [
+					{ id: 'auto', name: '端末に合わせる' },
+					{ id: 'light', name: 'ライト' },
+					{ id: 'dark', name: 'ダーク' },
+				];
 
 				const $ = (id) => document.getElementById(id);
 				const state = load();
@@ -656,6 +821,8 @@
 						return {
 							version: 1,
 							partnerName: typeof parsed.partnerName === 'string' && parsed.partnerName ? parsed.partnerName : 'AI',
+							palette: PALETTES.some((item) => item.id === parsed.palette) ? parsed.palette : 'moss',
+							mode: MODES.some((item) => item.id === parsed.mode) ? parsed.mode : 'auto',
 							logs: Array.isArray(parsed.logs) ? parsed.logs : [],
 						};
 					} catch (error) {
@@ -726,6 +893,73 @@
 							p.append(document.createTextNode(rest));
 						});
 						container.append(p);
+					}
+				}
+
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+				const isDark = () => (state.mode === 'auto' ? prefersDark.matches : state.mode === 'dark');
+
+				function applyTheme() {
+					const root = document.documentElement;
+					root.dataset.palette = state.palette;
+					root.classList.toggle('dark', isDark());
+					root.style.colorScheme = isDark() ? 'dark' : 'light';
+					renderSwatches();
+					renderModeChips();
+				}
+
+				prefersDark.addEventListener('change', () => {
+					if (state.mode === 'auto') applyTheme();
+				});
+
+				function renderSwatches() {
+					const host = $('swatches');
+					if (!host) return;
+					host.textContent = '';
+					for (const palette of PALETTES) {
+						const colors = isDark() ? palette.dark : palette.light;
+						const button = document.createElement('button');
+						button.type = 'button';
+						button.className = 'swatch';
+						button.setAttribute('aria-pressed', String(state.palette === palette.id));
+
+						const preview = document.createElement('span');
+						preview.className = 'swatch-preview';
+						preview.style.background = colors[0];
+						for (const color of colors.slice(1)) {
+							const dot = document.createElement('span');
+							dot.className = 'swatch-dot';
+							dot.style.background = color;
+							preview.append(dot);
+						}
+
+						const label = document.createElement('span');
+						label.textContent = palette.name;
+
+						button.append(preview, label);
+						button.addEventListener('click', () => {
+							state.palette = palette.id;
+							if (save()) applyTheme();
+						});
+						host.append(button);
+					}
+				}
+
+				function renderModeChips() {
+					const host = $('mode-chips');
+					if (!host) return;
+					host.textContent = '';
+					for (const mode of MODES) {
+						const chip = document.createElement('button');
+						chip.type = 'button';
+						chip.className = 'chip';
+						chip.textContent = mode.name;
+						chip.setAttribute('aria-pressed', String(state.mode === mode.id));
+						chip.addEventListener('click', () => {
+							state.mode = mode.id;
+							if (save()) applyTheme();
+						});
+						host.append(chip);
 					}
 				}
 
@@ -1169,6 +1403,7 @@
 				});
 
 				sortLogs();
+				applyTheme();
 				renderTagChips();
 				renderList();
 				showView('list');
