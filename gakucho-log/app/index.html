@@ -18,139 +18,140 @@
 				--mono: 'IBM Plex Mono', ui-monospace, monospace;
 			}
 
-			/* 配色。html の data-palette で選び、.dark が付くと夜の色に切り替わる。 */
+			/* 配色。html の data-palette で選び、.dark が付くと夜の色に切り替わる。
+			   地の色（--paper）から色味を振って、切り替えたことがひと目で分かるようにしている。 */
 			:root,
 			[data-palette='moss'] {
-				--paper: #f2f5f2;
+				--paper: #e6efe8;
 				--surface: #ffffff;
-				--surface-sunk: #eaefeb;
-				--ink: #17232a;
-				--ink-soft: #5d6f73;
-				--line: #dae3dd;
-				--accent: #1e6e5a;
-				--accent-soft: #e2efe9;
-				--me: #3c5b89;
-				--me-soft: #e8edf6;
-				--mark: #f7d67c;
+				--surface-sunk: #d6e5da;
+				--ink: #12211c;
+				--ink-soft: #4b6257;
+				--line: #bed6c7;
+				--accent: #14624c;
+				--accent-soft: #cbe6d9;
+				--me: #2f5688;
+				--me-soft: #d6e2f3;
+				--mark: #f7cf5f;
 				--mark-ink: #3a2c05;
-				--danger: #b4453a;
-				--shadow: 0 1px 2px rgba(23, 35, 42, 0.06), 0 8px 20px rgba(23, 35, 42, 0.05);
+				--danger: #a83a2c;
+				--shadow: 0 1px 2px rgba(18, 33, 28, 0.08), 0 8px 20px rgba(18, 33, 28, 0.07);
 			}
 			.dark,
 			.dark[data-palette='moss'] {
-				--paper: #101619;
-				--surface: #182126;
-				--surface-sunk: #131c20;
-				--ink: #e6eeea;
-				--ink-soft: #93a5a2;
-				--line: #26343a;
-				--accent: #4ec2a1;
-				--accent-soft: #17322b;
-				--me: #93b4e0;
-				--me-soft: #1b2634;
-				--mark: #6c5514;
+				--paper: #0b1613;
+				--surface: #14201c;
+				--surface-sunk: #0f1a17;
+				--ink: #e2ede7;
+				--ink-soft: #89a79a;
+				--line: #24352e;
+				--accent: #4fc9a2;
+				--accent-soft: #10382b;
+				--me: #8fb6e6;
+				--me-soft: #16263c;
+				--mark: #705716;
 				--mark-ink: #ffeab6;
 				--danger: #e58b7f;
-				--shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.28);
+				--shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.3);
 			}
 
 			[data-palette='sumi'] {
-				--paper: #f6f5f2;
-				--surface: #ffffff;
-				--surface-sunk: #edebe6;
-				--ink: #1c1a17;
-				--ink-soft: #6b6560;
-				--line: #e0dcd4;
-				--accent: #a8392b;
-				--accent-soft: #f7e8e4;
-				--me: #47433d;
-				--me-soft: #eceae4;
-				--mark: #ecd9a0;
+				--paper: #eee9df;
+				--surface: #fffdf8;
+				--surface-sunk: #e1dacb;
+				--ink: #1a1713;
+				--ink-soft: #61594e;
+				--line: #d5ccbb;
+				--accent: #9c2f20;
+				--accent-soft: #f4d8d0;
+				--me: #3f3a33;
+				--me-soft: #e3ddd0;
+				--mark: #edd085;
 				--mark-ink: #3a2f10;
-				--danger: #a8392b;
-				--shadow: 0 1px 2px rgba(28, 26, 23, 0.07), 0 8px 20px rgba(28, 26, 23, 0.06);
+				--danger: #9c2f20;
+				--shadow: 0 1px 2px rgba(26, 23, 19, 0.09), 0 8px 20px rgba(26, 23, 19, 0.07);
 			}
 			.dark[data-palette='sumi'] {
-				--paper: #14130f;
-				--surface: #1e1c18;
-				--surface-sunk: #191713;
-				--ink: #ece7de;
-				--ink-soft: #a09990;
-				--line: #322e28;
-				--accent: #e0705f;
-				--accent-soft: #33201c;
-				--me: #c9c3b8;
-				--me-soft: #26241f;
-				--mark: #6b5a2c;
+				--paper: #17130e;
+				--surface: #221d17;
+				--surface-sunk: #1b1712;
+				--ink: #ece5d8;
+				--ink-soft: #9d9385;
+				--line: #362f25;
+				--accent: #ea7357;
+				--accent-soft: #3d1f17;
+				--me: #cfc6b5;
+				--me-soft: #29241b;
+				--mark: #6f5a24;
 				--mark-ink: #f7ecc9;
-				--danger: #e0705f;
-				--shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.3);
+				--danger: #ea7357;
+				--shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(0, 0, 0, 0.32);
 			}
 
 			[data-palette='minamo'] {
-				--paper: #eef3f7;
+				--paper: #dfebf6;
 				--surface: #ffffff;
-				--surface-sunk: #e3ebf1;
-				--ink: #14202b;
-				--ink-soft: #5a6b78;
-				--line: #d5e0e8;
-				--accent: #1c5d80;
-				--accent-soft: #e0eef5;
-				--me: #6f5f9e;
-				--me-soft: #ece8f6;
-				--mark: #f5d98c;
+				--surface-sunk: #cfe0ee;
+				--ink: #10202e;
+				--ink-soft: #4b6376;
+				--line: #bcd4e6;
+				--accent: #14567d;
+				--accent-soft: #cbe2f2;
+				--me: #5f4d94;
+				--me-soft: #ded6f3;
+				--mark: #f5d275;
 				--mark-ink: #3a2e08;
-				--danger: #b4453a;
-				--shadow: 0 1px 2px rgba(20, 32, 43, 0.07), 0 8px 20px rgba(20, 32, 43, 0.06);
+				--danger: #a83a2c;
+				--shadow: 0 1px 2px rgba(16, 32, 46, 0.09), 0 8px 20px rgba(16, 32, 46, 0.07);
 			}
 			.dark[data-palette='minamo'] {
-				--paper: #0d151b;
-				--surface: #152029;
-				--surface-sunk: #111a21;
-				--ink: #e2ecf2;
-				--ink-soft: #8ba0af;
-				--line: #22323d;
-				--accent: #5fb2d8;
-				--accent-soft: #123040;
-				--me: #b0a3dc;
-				--me-soft: #221f33;
+				--paper: #08151f;
+				--surface: #10212e;
+				--surface-sunk: #0c1a25;
+				--ink: #dfeaf4;
+				--ink-soft: #829bb1;
+				--line: #1e3446;
+				--accent: #5cb8e6;
+				--accent-soft: #0e3549;
+				--me: #ab9ce8;
+				--me-soft: #1e1c3c;
 				--mark: #6c5514;
 				--mark-ink: #ffeab6;
 				--danger: #e58b7f;
-				--shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.3);
+				--shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(0, 0, 0, 0.32);
 			}
 
 			[data-palette='budo'] {
-				--paper: #f6f2f5;
+				--paper: #efe4ee;
 				--surface: #ffffff;
-				--surface-sunk: #eee7ec;
-				--ink: #221a24;
-				--ink-soft: #6c5f70;
-				--line: #e2d8e0;
-				--accent: #6c3f7a;
-				--accent-soft: #f1e8f4;
-				--me: #8a6626;
-				--me-soft: #f5eddc;
-				--mark: #f2d488;
+				--surface-sunk: #e2d4e2;
+				--ink: #1f1424;
+				--ink-soft: #62526a;
+				--line: #d6c3d7;
+				--accent: #5e3070;
+				--accent-soft: #e8d6ef;
+				--me: #8a6320;
+				--me-soft: #f3e4c2;
+				--mark: #f2cc6d;
 				--mark-ink: #3a2c05;
-				--danger: #b4453a;
-				--shadow: 0 1px 2px rgba(34, 26, 36, 0.07), 0 8px 20px rgba(34, 26, 36, 0.06);
+				--danger: #a83a2c;
+				--shadow: 0 1px 2px rgba(31, 20, 36, 0.09), 0 8px 20px rgba(31, 20, 36, 0.07);
 			}
 			.dark[data-palette='budo'] {
-				--paper: #16111a;
-				--surface: #201927;
-				--surface-sunk: #1a1420;
-				--ink: #ece4ef;
-				--ink-soft: #a494ab;
-				--line: #322843;
-				--accent: #c194d8;
-				--accent-soft: #2a1d33;
-				--me: #d8b978;
-				--me-soft: #2b2418;
+				--paper: #170e1d;
+				--surface: #221829;
+				--surface-sunk: #1a1121;
+				--ink: #ece1f0;
+				--ink-soft: #a08bab;
+				--line: #352744;
+				--accent: #c98fe0;
+				--accent-soft: #2f1b3e;
+				--me: #e0bc74;
+				--me-soft: #2f2414;
 				--mark: #6c5514;
 				--mark-ink: #ffeab6;
 				--danger: #e58b7f;
-				--shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 8px 20px rgba(0, 0, 0, 0.3);
+				--shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(0, 0, 0, 0.32);
 			}
 
 			* {
@@ -796,10 +797,10 @@
 				const defaultState = { version: 1, partnerName: 'AI', palette: 'moss', mode: 'auto', logs: [] };
 
 				const PALETTES = [
-					{ id: 'moss', name: 'もり', light: ['#f2f5f2', '#1e6e5a', '#3c5b89'], dark: ['#101619', '#4ec2a1', '#93b4e0'] },
-					{ id: 'sumi', name: 'すみ', light: ['#f6f5f2', '#a8392b', '#47433d'], dark: ['#14130f', '#e0705f', '#c9c3b8'] },
-					{ id: 'minamo', name: 'みなも', light: ['#eef3f7', '#1c5d80', '#6f5f9e'], dark: ['#0d151b', '#5fb2d8', '#b0a3dc'] },
-					{ id: 'budo', name: 'ぶどう', light: ['#f6f2f5', '#6c3f7a', '#8a6626'], dark: ['#16111a', '#c194d8', '#d8b978'] },
+					{ id: 'moss', name: 'もり', light: ['#e6efe8', '#14624c', '#2f5688'], dark: ['#0b1613', '#4fc9a2', '#8fb6e6'] },
+					{ id: 'sumi', name: 'すみ', light: ['#eee9df', '#9c2f20', '#3f3a33'], dark: ['#17130e', '#ea7357', '#cfc6b5'] },
+					{ id: 'minamo', name: 'みなも', light: ['#dfebf6', '#14567d', '#5f4d94'], dark: ['#08151f', '#5cb8e6', '#ab9ce8'] },
+					{ id: 'budo', name: 'ぶどう', light: ['#efe4ee', '#5e3070', '#8a6320'], dark: ['#170e1d', '#c98fe0', '#e0bc74'] },
 				];
 				const MODES = [
 					{ id: 'auto', name: '端末に合わせる' },
