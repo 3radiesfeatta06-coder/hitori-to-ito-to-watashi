@@ -762,8 +762,23 @@
 
 				<section class="panel">
 					<h3>読み込み</h3>
-					<p>書き出したファイルを読み込みます。いまある記録に<b>追加</b>されます（同じ記録は重複しません）。</p>
-					<input id="import-file" type="file" accept="application/json,.json" />
+					<p>
+						書き出した記録を読み込みます。いまある記録に<b>追加</b>されます（同じ記録は重複しません）。
+						機種変更のときや、スマホとパソコンの両方で同じ記録を持ちたいときに使ってください。
+					</p>
+					<div class="field">
+						<label for="import-file">ファイルから読み込む</label>
+						<input id="import-file" type="file" accept="application/json,.json" />
+					</div>
+					<div class="field">
+						<label for="import-text">文字から読み込む</label>
+						<p class="help">
+							別の端末で「文字としてコピー」した内容を、そのまま貼り付けてください。
+							自分宛のメールやメモアプリを経由すれば、ファイルを扱わずに移せます。
+						</p>
+						<textarea id="import-text" rows="4" placeholder="ここに貼り付け"></textarea>
+					</div>
+					<button class="btn" id="import-text-btn" type="button">貼り付けた内容を読み込む</button>
 				</section>
 
 				<section class="panel">
@@ -1329,11 +1344,10 @@
 					}
 				});
 
-				$('import-file').addEventListener('change', async (event) => {
-					const file = event.target.files?.[0];
-					if (!file) return;
+				/** 書き出した内容（文字列）を取り込む。すでにある記録は重複させない。 */
+				function importFromText(text, whatWentWrong) {
 					try {
-						const parsed = JSON.parse(await file.text());
+						const parsed = JSON.parse(text);
 						const incoming = Array.isArray(parsed.logs) ? parsed.logs : [];
 						if (incoming.length === 0) throw new Error('logs がありません');
 						const known = new Set(state.logs.map((log) => log.id));
@@ -1351,15 +1365,33 @@
 							added += 1;
 						}
 						sortLogs();
-						if (!save()) return;
+						if (!save()) return false;
 						renderTagChips();
 						renderList();
-						alert(`${added}件を読み込みました。`);
+						alert(added === 0 ? 'すでに同じ記録があるため、追加はありませんでした。' : `${added}件を読み込みました。`);
+						return true;
 					} catch (error) {
 						console.error(error);
-						alert('読み込めませんでした。書き出したJSONファイルを選んでください。');
-					} finally {
-						event.target.value = '';
+						alert(whatWentWrong);
+						return false;
+					}
+				}
+
+				$('import-file').addEventListener('change', async (event) => {
+					const file = event.target.files?.[0];
+					if (!file) return;
+					importFromText(await file.text(), '読み込めませんでした。書き出したJSONファイルを選んでください。');
+					event.target.value = '';
+				});
+
+				$('import-text-btn').addEventListener('click', () => {
+					const text = $('import-text').value.trim();
+					if (!text) {
+						alert('貼り付け欄が空です。「文字としてコピー」した内容を貼り付けてください。');
+						return;
+					}
+					if (importFromText(text, '読み込めませんでした。「文字としてコピー」した内容が、途中で切れていないか確認してください。')) {
+						$('import-text').value = '';
 					}
 				});
 
